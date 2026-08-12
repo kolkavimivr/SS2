@@ -20,49 +20,49 @@ app.all('/survey', (req, res) => {
     // 2. בדיקה סדרתית: איזה פרמטר חסר? (מהתחלה לסוף)
     // -------------------------------------------------------------
 
-    // שאלה 01 - כולל השמעת פתיח השאלון (quiz_intro)
+    // שאלה 01 - השמעת פתיח (quiz_intro) וקובץ q01
     if (!params.q01) {
-        return res.send('read=f-quiz_intro,f-v001=q01,yes,1,1,7,Number,no,no,1.2.3');
+        return res.send('read=f-quiz_intro,f-q01=q01,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 02
     if (!params.q02) {
-        return res.send('read=f-v002=q02,yes,1,1,7,Number,no,no,1.2.3');
+        return res.send('read=f-q02=q02,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 03
     if (!params.q03) {
-        return res.send('read=f-v003=q03,yes,1,1,7,Number,no,no,1.2.3');
+        return res.send('read=f-q03=q03,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 04
     if (!params.q04) {
-        return res.send('read=f-v004=q04,yes,1,1,7,Number,no,no,1.2.3');
+        return res.send('read=f-q04=q04,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 05
     if (!params.q05) {
-        return res.send('read=f-v005=q05,yes,1,1,7,Number,no,no,1.2.3');
+        return res.send('read=f-q05=q05,yes,1,1,7,Number,no,no,1.2.3');
     }
 
-    // שאלה 11 (חלק ב')
+    // שאלה 11 (חלק ב') - אם הקובץ בשלוחה נקרא q11.wav או q06.wav יש לוודא התאמה
     if (!params.q11) {
-        return res.send('read=f-v011=q11,yes,1,1,7,Number,no,no,1.2.3');
+        return res.send('read=f-q11=q11,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 16 (חלק ג' - כולל מעברון mid_intro3)
     if (!params.q16) {
-        return res.send('read=f-mid_intro3,f-v016=q16,yes,1,1,7,Number,no,no,1.2.3');
+        return res.send('read=f-mid_intro3,f-q16=q16,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 17
     if (!params.q17) {
-        return res.send('read=f-v017=q17,yes,1,1,7,Number,no,no,1.2.3');
+        return res.send('read=f-q17=q17,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 18
     if (!params.q18) {
-        return res.send('read=f-v018=q18,yes,1,1,7,Number,no,no,1.2.3');
+        return res.send('read=f-q18=q18,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // -------------------------------------------------------------
