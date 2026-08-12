@@ -8,7 +8,7 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
     // הגדרת Content-Type כטקסט נקי עבור ימות המשיח
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
 
-    // איחוד פרמטרים מ-GET ו-POST
+    // איחוד הפרמטרים הנכנסים מימות המשיח (GET / POST)
     const params = { ...req.query, ...req.body };
 
     // 1. טיפול בניתוק שיחה
@@ -16,47 +16,63 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         return res.send('OK');
     }
 
+    // פונקציית עזר לחילוץ פרמטרים בטוח (תומכת ב-q01 וגם ב-f-q01)
+    const getParam = (key) => params[key] || params[`f-${key}`];
+
+    const q01 = getParam('q01');
+    const q02 = getParam('q02');
+    const q03 = getParam('q03');
+    const q04 = getParam('q04');
+    const q05 = getParam('q05');
+    const q06 = getParam('q06');
+    const q07 = getParam('q07');
+    const q08 = getParam('q08');
+    const q09 = getParam('q09');
+    const q10 = getParam('q10');
+    const q11 = getParam('q11');
+    const q12 = getParam('q12');
+    const q13 = getParam('q13');
+    const q14 = getParam('q14');
+    const q15 = getParam('q15');
+    const q16 = getParam('q16');
+    const q17 = getParam('q17');
+
     // -------------------------------------------------------------
-    // 2. בדיקת שאלות ברצף (שרשור פתיחים בתוך פקודת read בנפרד)
+    // 2. בדיקת שאלות ברצף (המבנה המקורי והיציב למניעת ניתוקים)
     // -------------------------------------------------------------
 
-    // שאלה 01: פתיח quiz_intro + שאלה q01
-    if (!params.q01) {
-        return res.send('read=q01=f-quiz_intro.f-q01,yes,1,1,7,Number,yes,no,1.2.3');
+    // שאלה 01: פתיח ראשי + שאלה q01
+    if (!q01) {
+        return res.send('id_list_message=f-quiz_intro&read=q01=q01,yes,1,1,7,Number,yes,no,1.2.3');
     }
 
     // שאלות 02 עד 14
-    if (!params.q02) return res.send('read=q02=f-q02,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q03) return res.send('read=q03=f-q03,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q04) return res.send('read=q04=f-q04,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q05) return res.send('read=q05=f-q05,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q06) return res.send('read=q06=f-q06,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q07) return res.send('read=q07=f-q07,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q08) return res.send('read=q08=f-q08,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q09) return res.send('read=q09=f-q09,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q10) return res.send('read=q10=f-q10,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q11) return res.send('read=q11=f-q11,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q12) return res.send('read=q12=f-q12,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q13) return res.send('read=q13=f-q13,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q14) return res.send('read=q14=f-q14,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q02) return res.send('read=q02=q02,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q03) return res.send('read=q03=q03,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q04) return res.send('read=q04=q04,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q05) return res.send('read=q05=q05,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q06) return res.send('read=q06=q06,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q07) return res.send('read=q07=q07,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q08) return res.send('read=q08=q08,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q09) return res.send('read=q09=q09,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q10) return res.send('read=q10=q10,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q11) return res.send('read=q11=q11,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q12) return res.send('read=q12=q12,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q13) return res.send('read=q13=q13,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q14) return res.send('read=q14=q14,yes,1,1,7,Number,yes,no,1.2.3');
 
-    // שאלה 15: מעברון חלק ג' mid_intro3 + שאלה q15
-    if (!params.q15) {
-        return res.send('read=q15=f-mid_intro3.f-q15,yes,1,1,7,Number,yes,no,1.2.3');
+    // שאלה 15: מעברון חלק ג' + שאלה q15
+    if (!q15) {
+        return res.send('id_list_message=f-mid_intro3&read=q15=q15,yes,1,1,7,Number,yes,no,1.2.3');
     }
 
     // שאלות 16 ו-17
-    if (!params.q16) return res.send('read=q16=f-q16,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q17) return res.send('read=q17=f-q17,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q16) return res.send('read=q16=q16,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q17) return res.send('read=q17=q17,yes,1,1,7,Number,yes,no,1.2.3');
 
     // -------------------------------------------------------------
     // 3. שלב סיום: חישוב תוצאות ומשוב
     // -------------------------------------------------------------
-    const { 
-        q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11, 
-        q12, q13, q14, q15, q16, q17 
-    } = params;
-
     const scores = {
         m_accounting: 0,
         m_graphics: 0,
@@ -67,7 +83,6 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         m_hr: 0
     };
 
-    // חישוב ניקוד לפי הבחירות בזוגות
     const pairwiseQuestions = [
         { ans: q01, a: 'm_accounting', b: 'm_graphics' },
         { ans: q02, a: 'm_tech',       b: 'm_education' },
@@ -91,10 +106,8 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         }
     });
 
-    // מיון המגמות מהציון הגבוה לנמוך
     const sortedMajors = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
 
-    // בניית רשימת השמעה לתוצאות
     const playList = [
         'quiz_results',
         sortedMajors[0],
@@ -102,7 +115,6 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         sortedMajors[2]
     ];
 
-    // תנאי משוב מיוחדים לפי שאלות 15-17
     if (q15 === '1' || q17 === '1') playList.push('warning_social');
     if (q16 === '1') playList.push('info_minimal_load');
     if (q15 === '2' && q17 === '2') playList.push('info_independent');
