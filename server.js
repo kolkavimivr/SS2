@@ -4,10 +4,10 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// זיכרון זמני לשמירת מצב השיחה לפי מזהה שיחה של ימות המשיח
+// זיכרון זמני לשמירת מצב השיחה לפי מזהה שיחה
 const sessions = {};
 
-// מיפוי שמות המגמות לתצוגה בשמע/TTS
+// מיפוי שמות המגמות לתצוגה
 const MAJOR_NAMES = {
     accounting: 'חשבונאות',
     graphics: 'גרפיקה',
@@ -33,13 +33,13 @@ const PAIRWISE_QUESTIONS = [
     { id: 'q11', file: 'q11.wav', majorA: 'sewing',     majorB: 'accounting' }
 ];
 
-// נקודת הקצה הראשית שמקבלת את הפניות מימות המשיח
-app.all('/ivr', (req, res) => {
+// תמיכה בכל הקישורים האפשריים: /survey, /ivr, וגם הכתובת הראשית /
+app.all(['/survey', '/ivr', '/'], (req, res) => {
     const params = { ...req.query, ...req.body };
     const callId = params.ApiCallId || params.ApiPhone || 'default_session';
-    const userVal = params.val; // הקשת המקש של התלמידה
+    const userVal = params.val;
 
-    // אתחול סשן חדש אם השיחה עוד לא קיימת בזיכרון
+    // אתחול שיחה חדשה במידת הצורך
     if (!sessions[callId]) {
         sessions[callId] = {
             step: 1,
@@ -58,18 +58,16 @@ app.all('/ivr', (req, res) => {
 
     const session = sessions[callId];
 
-    // אם התקבל שידור נתונים עם תשובה מהשלב הקודם
+    // קליטת תשובה מהשלב הקודם
     if (userVal) {
-        // בדיקת תקינות המקש (מותר רק 1, 2 או 3)
         if (!['1', '2', '3'].includes(userVal)) {
             return res.send(buildReadResponse(`q${String(session.step).padStart(2, '0')}.wav`));
         }
 
-        // שמירת התשובה בסיכום
         const currentQId = `q${String(session.step).padStart(2, '0')}`;
         session.answers[currentQId] = userVal;
 
-        // עיבוד הניקוד עבור שאלות 1 עד 11
+        // חישוב ניקוד לשאלות 1-11
         if (session.step <= 11) {
             const qConfig = PAIRWISE_QUESTIONS[session.step - 1];
             if (userVal === '1') {
@@ -77,19 +75,15 @@ app.all('/ivr', (req, res) => {
             } else if (userVal === '2') {
                 session.scores[qConfig.majorB] += 1;
             } else if (userVal === '3') {
-                // מניעת אינפלציית נקודות: 0.5 נקודות לכל מגמה
                 session.scores[qConfig.majorA] += 0.5;
                 session.scores[qConfig.majorB] += 0.5;
             }
         }
 
-        // מתקדמים לשאלה הבאה
         session.step++;
     }
 
-    // -------------------------------------------------------------
-    // ניתוח והקראת השאלות/המעברים בהתאם לשלב (session.step)
-    // -------------------------------------------------------------
+    // --- שרשור והשמעת השאלות ---
 
     // שלב 1: פתיח + שאלה 1
     if (session.step === 1) {
@@ -109,66 +103,45 @@ app.all('/ivr', (req, res) => {
 
     // שאלות 16 ו-17
     if (session.step === 16 || session.step === 17) {
-        const qFile = `q${session.step}.wav`;
-        return res.send(buildReadResponse(qFile));
+        return res.send(buildReadResponse(`q${session.step}.wav`));
     }
 
-    // -------------------------------------------------------------
-    // שלב 18: סיום המבדק - חישוב תוצאות והשמעת התניות
-    // -------------------------------------------------------------
+    // --- שלב סיום וחישוב תוצאות ---
     if (session.step > 17) {
-        // מיון המגמות לפי ניקוד מהגבוה לנמוך
         const sortedMajors = Object.keys(session.scores)
             .sort((a, b) => session.scores[b] - session.scores[a])
             .map(key => MAJOR_NAMES[key]);
 
         const top1 = sortedMajors[0];
         const top2 = sortedMajors[1];
-        const top3 = sortedMajors[2];
 
-        // הרכבת רשימת השמעות לסיום השיחה
-        let responseMessages = [];
+        let responseMessages = [
+            'f-quiz_results.wav',
+            `t-במקום הראשון: ${top1}. במקום השני: ${top2}. במקום השלישי: ${sortedMajors[2]}.`
+        ];
 
-        // 1. פתיח תוצאות + הקראת הטופ 3 ב-TTS (או בקבצים מוקלטים)
-        responseMessages.push('f-quiz_results.wav');
-        responseMessages.push(`t-במקום הראשון: ${top1}. במקום השני: ${top2}. במקום השלישי: ${top3}.`);
-
-        // 2. תנאי חברתי (warning_social.wav) - מקש 1 בשאלה 15 או 17
         if (session.answers['q15'] === '1' || session.answers['q17'] === '1') {
             responseMessages.push('f-warning_social.wav');
         }
 
-        // 3. תנאי עומס מבוקר (info_minimal_load.wav) - מקש 1 בשאלה 16
         if (session.answers['q16'] === '1') {
             responseMessages.push('f-info_minimal_load.wav');
         }
 
-        // 4. תנאי עצמאות (info_independent.wav) - מקש 2 בשאלות 15 וגם 17
         if (session.answers['q15'] === '2' && session.answers['q17'] === '2') {
             responseMessages.push('f-info_independent.wav');
         }
 
-        // ניקוי הסשן מהזיכרון
         delete sessions[callId];
-
-        // שליחת הפקודה לסיום השיחה בימות המשיח
         return res.send(`id_list_message=${responseMessages.join(':')}&hangup`);
     }
 });
 
-/**
- * פונקציית עזר להרכבת פקודת קליטת מקש (read) בימות המשיח
- * @param {string} fileName - שם קובץ השמע להשמעה
- */
 function buildReadResponse(fileName) {
-    // f-filename = השמעת הקובץ
-    // val = שם המשתנה שיוחזר בפוסט/גט הבא
-    // no,1,1,1,Y,1,N = הגדרות מקש יחיד, מינימום 1 ספרה, מקסימום 1 ספרה, טיימאאוט וכו'
     return `read=f-${fileName}=val,no,1,1,1,Y,1,N`;
 }
 
-// הפעלת השרת על פורט 3000
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running and listening on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
