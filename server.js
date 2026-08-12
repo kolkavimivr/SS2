@@ -4,144 +4,163 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// זיכרון זמני לשמירת מצב השיחה לפי מזהה שיחה
-const sessions = {};
-
-// מיפוי שמות המגמות לתצוגה
-const MAJOR_NAMES = {
-    accounting: 'חשבונאות',
-    graphics: 'גרפיקה',
-    tech: 'תקשוב',
-    education: 'חינוך',
-    sewing: 'תפירה ויצירה',
-    marketing: 'שיווק',
-    hr: 'ניהול משאבי אנוש'
-};
-
-// הגדרת 11 שאלות חלק א' (השוואה בין מגמות)
-const PAIRWISE_QUESTIONS = [
-    { id: 'q01', file: 'q01.wav', majorA: 'accounting', majorB: 'graphics' },
-    { id: 'q02', file: 'q02.wav', majorA: 'tech',       majorB: 'education' },
-    { id: 'q03', file: 'q03.wav', majorA: 'sewing',     majorB: 'marketing' },
-    { id: 'q04', file: 'q04.wav', majorA: 'hr',         majorB: 'accounting' },
-    { id: 'q05', file: 'q05.wav', majorA: 'graphics',   majorB: 'tech' },
-    { id: 'q06', file: 'q06.wav', majorA: 'education',  majorB: 'hr' },
-    { id: 'q07', file: 'q07.wav', majorA: 'marketing',  majorB: 'sewing' },
-    { id: 'q08', file: 'q08.wav', majorA: 'accounting', majorB: 'tech' },
-    { id: 'q09', file: 'q09.wav', majorA: 'graphics',   majorB: 'hr' },
-    { id: 'q10', file: 'q10.wav', majorA: 'education',  majorB: 'marketing' },
-    { id: 'q11', file: 'q11.wav', majorA: 'sewing',     majorB: 'accounting' }
-];
-
-// תמיכה בכל הקישורים האפשריים: /survey, /ivr, וגם הכתובת הראשית /
 app.all(['/survey', '/ivr', '/'], (req, res) => {
+    // הגדרת Content-Type כטקסט נקי
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+
+    // איחוד הפרמטרים הנכנסים מימות המשיח (GET / POST)
     const params = { ...req.query, ...req.body };
-    const callId = params.ApiCallId || params.ApiPhone || 'default_session';
-    const userVal = params.val;
 
-    // אתחול שיחה חדשה במידת הצורך
-    if (!sessions[callId]) {
-        sessions[callId] = {
-            step: 1,
-            scores: {
-                accounting: 0,
-                graphics: 0,
-                tech: 0,
-                education: 0,
-                sewing: 0,
-                marketing: 0,
-                hr: 0
-            },
-            answers: {}
-        };
+    // 1. טיפול בניתוק שיחה
+    if (params.hangup === 'yes') {
+        return res.send('OK');
     }
 
-    const session = sessions[callId];
+    // -------------------------------------------------------------
+    // 2. בדיקה סדרתית: איזה פרמטר חסר? (שאלות 01 עד 17)
+    // -------------------------------------------------------------
 
-    // קליטת תשובה מהשלב הקודם
-    if (userVal) {
-        if (!['1', '2', '3'].includes(userVal)) {
-            return res.send(buildReadResponse(`q${String(session.step).padStart(2, '0')}.wav`));
+    // חלק א': העדפות וכישורי ליבה (שאלות 1–11)
+    if (!params.q01) {
+        return res.send('read=f-quiz_intro,f-q01=q01,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q02) {
+        return res.send('read=f-q02=q02,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q03) {
+        return res.send('read=f-q03=q03,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q04) {
+        return res.send('read=f-q04=q04,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q05) {
+        return res.send('read=f-q05=q05,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q06) {
+        return res.send('read=f-q06=q06,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q07) {
+        return res.send('read=f-q07=q07,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q08) {
+        return res.send('read=f-q08=q08,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q09) {
+        return res.send('read=f-q09=q09,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q10) {
+        return res.send('read=f-q10=q10,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q11) {
+        return res.send('read=f-q11=q11,yes,1,1,7,Number,no,no,1.2.3');
+    }
+
+    // חלק ב': סגנון למידה וסביבת עבודה (שאלות 12–14)
+    if (!params.q12) {
+        return res.send('read=f-q12=q12,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q13) {
+        return res.send('read=f-q13=q13,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q14) {
+        return res.send('read=f-q14=q14,yes,1,1,7,Number,no,no,1.2.3');
+    }
+
+    // חלק ג': סגנון קבלת החלטות ודגלים (שאלות 15–17, כולל מעברון לפני 15)
+    if (!params.q15) {
+        return res.send('read=f-mid_intro3,f-q15=q15,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q16) {
+        return res.send('read=f-q16=q16,yes,1,1,7,Number,no,no,1.2.3');
+    }
+    if (!params.q17) {
+        return res.send('read=f-q17=q17,yes,1,1,7,Number,no,no,1.2.3');
+    }
+
+    // -------------------------------------------------------------
+    // 3. שלב סיום: כל 17 התשובות התקבלו! חישוב תוצאות ומשוב
+    // -------------------------------------------------------------
+    const { 
+        q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11, 
+        q12, q13, q14, q15, q16, q17 
+    } = params;
+
+    // א. אתחול ניקוד 7 המגמות
+    const scores = {
+        m_accounting: 0, // חשבונאות
+        m_graphics: 0,   // גרפיקה
+        m_tech: 0,       // תקשוב
+        m_education: 0,  // חינוך
+        m_sewing: 0,     // תפירה ויצירה
+        m_marketing: 0,  // שיווק
+        m_hr: 0          // ניהול משאבי אנוש
+    };
+
+    // ב. ניתוח תשובות חלק א' (שאלות 1–11)
+    const pairwiseQuestions = [
+        { ans: q01, a: 'm_accounting', b: 'm_graphics' },
+        { ans: q02, a: 'm_tech',       b: 'm_education' },
+        { ans: q03, a: 'm_sewing',     b: 'm_marketing' },
+        { ans: q04, a: 'm_hr',         b: 'm_accounting' },
+        { ans: q05, a: 'm_graphics',   b: 'm_tech' },
+        { ans: q06, a: 'm_education',  b: 'm_hr' },
+        { ans: q07, a: 'm_marketing',  b: 'm_sewing' },
+        { ans: q08, a: 'm_accounting', b: 'm_tech' },
+        { ans: q09, a: 'm_graphics',   b: 'm_hr' },
+        { ans: q10, a: 'm_education',  b: 'm_marketing' },
+        { ans: q11, a: 'm_sewing',     b: 'm_accounting' }
+    ];
+
+    pairwiseQuestions.forEach(q => {
+        if (q.ans === '1') {
+            scores[q.a] += 1;
+        } else if (q.ans === '2') {
+            scores[q.b] += 1;
+        } else if (q.ans === '3') {
+            scores[q.a] += 0.5;
+            scores[q.b] += 0.5;
         }
+    });
 
-        const currentQId = `q${String(session.step).padStart(2, '0')}`;
-        session.answers[currentQId] = userVal;
+    // ג. דירוג 7 המגמות מהגבוה לנמוך ובחירת 3 המקומות הראשונים
+    const sortedMajors = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+    const top1 = sortedMajors[0];
+    const top2 = sortedMajors[1];
+    const top3 = sortedMajors[2];
 
-        // חישוב ניקוד לשאלות 1-11
-        if (session.step <= 11) {
-            const qConfig = PAIRWISE_QUESTIONS[session.step - 1];
-            if (userVal === '1') {
-                session.scores[qConfig.majorA] += 1;
-            } else if (userVal === '2') {
-                session.scores[qConfig.majorB] += 1;
-            } else if (userVal === '3') {
-                session.scores[qConfig.majorA] += 0.5;
-                session.scores[qConfig.majorB] += 0.5;
-            }
-        }
+    // ד. הרכבת רשימת השמעה לתוצאות בסיום
+    const playList = [
+        'quiz_results',
+        top1,
+        top2,
+        top3
+    ];
 
-        session.step++;
+    // ה. בדיקת התניות חלק ג' והוספת קבצי משוב/אזהרה לפי התשובות
+    // תנאי חברתי (שאלה 15 או 17 הקישה 1)
+    if (q15 === '1' || q17 === '1') {
+        playList.push('warning_social');
     }
 
-    // --- שרשור והשמעת השאלות ---
-
-    // שלב 1: פתיח + שאלה 1
-    if (session.step === 1) {
-        return res.send(`id_list_message=f-quiz_intro.wav&${buildReadResponse('q01.wav')}`);
+    // תנאי עומס מבוקר (שאלה 16 הקישה 1)
+    if (q16 === '1') {
+        playList.push('info_minimal_load');
     }
 
-    // שאלות 2 עד 14
-    if (session.step >= 2 && session.step <= 14) {
-        const qFile = `q${String(session.step).padStart(2, '0')}.wav`;
-        return res.send(buildReadResponse(qFile));
+    // תנאי עצמאות (שאלה 15 וגם 17 הקישה 2)
+    if (q15 === '2' && q17 === '2') {
+        playList.push('info_independent');
     }
 
-    // שלב 15: מעברון + שאלה 15
-    if (session.step === 15) {
-        return res.send(`id_list_message=f-mid_intro3.wav&${buildReadResponse('q15.wav')}`);
-    }
+    // ו. יצירת מחרוזת id_list_message (שרשור קבצים עם נקודה)
+    const idListMessage = playList.map(file => `f-${file}`).join('.');
 
-    // שאלות 16 ו-17
-    if (session.step === 16 || session.step === 17) {
-        return res.send(buildReadResponse(`q${session.step}.wav`));
-    }
-
-    // --- שלב סיום וחישוב תוצאות ---
-    if (session.step > 17) {
-        const sortedMajors = Object.keys(session.scores)
-            .sort((a, b) => session.scores[b] - session.scores[a])
-            .map(key => MAJOR_NAMES[key]);
-
-        const top1 = sortedMajors[0];
-        const top2 = sortedMajors[1];
-
-        let responseMessages = [
-            'f-quiz_results.wav',
-            `t-במקום הראשון: ${top1}. במקום השני: ${top2}. במקום השלישי: ${sortedMajors[2]}.`
-        ];
-
-        if (session.answers['q15'] === '1' || session.answers['q17'] === '1') {
-            responseMessages.push('f-warning_social.wav');
-        }
-
-        if (session.answers['q16'] === '1') {
-            responseMessages.push('f-info_minimal_load.wav');
-        }
-
-        if (session.answers['q15'] === '2' && session.answers['q17'] === '2') {
-            responseMessages.push('f-info_independent.wav');
-        }
-
-        delete sessions[callId];
-        return res.send(`id_list_message=${responseMessages.join(':')}&hangup`);
-    }
+    // החזרת תשובת סיום ומעבר לשלוחה /0/4/2
+    return res.send(`id_list_message=${idListMessage}&go_to_folder=/0/4/2`);
 });
 
-function buildReadResponse(fileName) {
-    return `read=f-${fileName}=val,no,1,1,1,Y,1,N`;
-}
-
-const PORT = process.env.PORT || 3000;
+// הגדרת פורט מותאם ל-Render
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
