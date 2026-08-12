@@ -17,12 +17,12 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
     }
 
     // -------------------------------------------------------------
-    // 2. בדיקת שאלות ברצף (תיקון תחביר: read=VARIABLE=FILE)
+    // 2. בדיקת שאלות ברצף (שרשור פתיחים בתוך read באמצעות נקודה)
     // -------------------------------------------------------------
 
-    // שאלה 01: פתיח ראשי + שאלה q01
+    // שאלה 01: פתיח ראשי (quiz_intro) + שאלה q01
     if (!params.q01) {
-        return res.send('id_list_message=f-quiz_intro&read=q01=f-q01,yes,1,1,7,Number,yes,no,1.2.3');
+        return res.send('read=q01=f-quiz_intro.f-q01,yes,1,1,7,Number,yes,no,1.2.3');
     }
 
     // שאלות 02 עד 14
@@ -40,9 +40,9 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
     if (!params.q13) return res.send('read=q13=f-q13,yes,1,1,7,Number,yes,no,1.2.3');
     if (!params.q14) return res.send('read=q14=f-q14,yes,1,1,7,Number,yes,no,1.2.3');
 
-    // שאלה 15: מעברון חלק ג' + שאלה q15
+    // שאלה 15: מעברון חלק ג' (mid_intro3) + שאלה q15
     if (!params.q15) {
-        return res.send('id_list_message=f-mid_intro3&read=q15=f-q15,yes,1,1,7,Number,yes,no,1.2.3');
+        return res.send('read=q15=f-mid_intro3.f-q15,yes,1,1,7,Number,yes,no,1.2.3');
     }
 
     // שאלות 16 ו-17
