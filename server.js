@@ -5,7 +5,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.all('/survey', (req, res) => {
-    // חובה: הגדרת Content-Type כטקסט נקי
+    // הגדרת Content-Type כטקסט נקי
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
 
     // איחוד הפרמטרים הנכנסים מימות המשיח (GET / POST)
@@ -22,47 +22,47 @@ app.all('/survey', (req, res) => {
 
     // שאלה 01 - כולל השמעת פתיח השאלון (quiz_intro)
     if (!params.q01) {
-        return res.send('read=f-quiz_intro,f-v001=q01,no,1,1,5,Stt,no,1,2,3');
+        return res.send('read=f-quiz_intro,f-v001=q01,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 02
     if (!params.q02) {
-        return res.send('read=f-v002=q02,no,1,1,5,Stt,no,1,2,3');
+        return res.send('read=f-v002=q02,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 03
     if (!params.q03) {
-        return res.send('read=f-v003=q03,no,1,1,5,Stt,no,1,2,3');
+        return res.send('read=f-v003=q03,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 04
     if (!params.q04) {
-        return res.send('read=f-v004=q04,no,1,1,5,Stt,no,1,2,3');
+        return res.send('read=f-v004=q04,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 05
     if (!params.q05) {
-        return res.send('read=f-v005=q05,no,1,1,5,Stt,no,1,2,3');
+        return res.send('read=f-v005=q05,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 11 (חלק ב')
     if (!params.q11) {
-        return res.send('read=f-v011=q11,no,1,1,5,Stt,no,1,2,3');
+        return res.send('read=f-v011=q11,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 16 (חלק ג' - כולל מעברון mid_intro3)
     if (!params.q16) {
-        return res.send('read=f-mid_intro3,f-v016=q16,no,1,1,5,Stt,no,1,2,3');
+        return res.send('read=f-mid_intro3,f-v016=q16,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 17
     if (!params.q17) {
-        return res.send('read=f-v017=q17,no,1,1,5,Stt,no,1,2,3');
+        return res.send('read=f-v017=q17,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלה 18
     if (!params.q18) {
-        return res.send('read=f-v018=q18,no,1,1,5,Stt,no,1,2,3');
+        return res.send('read=f-v018=q18,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // -------------------------------------------------------------
@@ -127,7 +127,7 @@ app.all('/survey', (req, res) => {
         playList.push('info_independent');
     }
 
-    // ה. יצירת מחרוזת id_list_message (קובצי השמעה מופרדים בנקודה)
+    // ה. יצירת מחרוזת id_list_message
     const idListMessage = playList.map(file => `f-${file}`).join('.');
 
     // החזרת תשובת סיום ומעבר לשלוחה /0/4/2
