@@ -41,12 +41,12 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
     const q17 = getAns('q17');
 
     // -------------------------------------------------------------
-    // 2. מעבר שאלות רציף - קובץ השמעה f-qXX, משתנה נקלט qXX
+    // 2. מעבר שאלות רציף (פתיחים משורשרים ישירות בתוך ה-read)
     // -------------------------------------------------------------
 
-    // שאלה 01: פתיח ראשי + שאלה q01
+    // שאלה 01: פתיח ראשי + שאלה q01 משורשרים יחד ברצף
     if (!q01) {
-        return res.send('id_list_message=f-quiz_intro&read=q01=f-q01,no,1,1,7,Number,no,no,1.2.3');
+        return res.send('read=q01=f-quiz_intro.f-q01,no,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלות 02 עד 14
@@ -64,9 +64,9 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
     if (!q13) return res.send('read=q13=f-q13,no,1,1,7,Number,no,no,1.2.3');
     if (!q14) return res.send('read=q14=f-q14,no,1,1,7,Number,no,no,1.2.3');
 
-    // שאלה 15: מעברון חלק ג' + שאלה q15
+    // שאלה 15: מעברון חלק ג' + שאלה q15 משורשרים יחד ברצף
     if (!q15) {
-        return res.send('id_list_message=f-mid_intro3&read=q15=f-q15,no,1,1,7,Number,no,no,1.2.3');
+        return res.send('read=q15=f-mid_intro3.f-q15,no,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלות 16 ו-17
@@ -74,7 +74,7 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
     if (!q17) return res.send('read=q17=f-q17,no,1,1,7,Number,no,no,1.2.3');
 
     // -------------------------------------------------------------
-    // 3. שלב סיום: חישוב תוצאות ומשוב מדויק
+    // 3. שלב סיום: חישוב תוצאות והשמעתן
     // -------------------------------------------------------------
     const scores = {
         m_accounting: 0,
