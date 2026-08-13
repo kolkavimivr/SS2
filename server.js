@@ -5,18 +5,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.all(['/survey', '/ivr', '/'], (req, res) => {
-    // הגדרת Content-Type כטקסט נקי עבור ימות המשיח
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
 
-    // איחוד הפרמטרים הנכנסים מימות המשיח (GET / POST)
     const params = { ...req.query, ...req.body };
 
-    // 1. טיפול בניתוק שיחה
     if (params.hangup === 'yes') {
         return res.send('OK');
     }
 
-    // פונקציה לחילוץ בטוח של התשובות (תומכת ב-f-q01 וגם ב-q01)
+    // חילוץ תשובות בטוח (מטפל גם ב-f-q01 וגם ב-q01)
     const getAns = (key) => {
         const val = params[`f-${key}`] || params[key];
         return val ? String(val).trim() : null;
@@ -41,15 +38,9 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
     const q17 = getAns('q17');
 
     // -------------------------------------------------------------
-    // 2. מעבר שאלות רציף - בלחיצה על 1, 2, 3 עוברים מיד לשאלה הבאה
+    // מעבר שאלות רציף ומיידי (ללא שאלת אישור)
     // -------------------------------------------------------------
-
-    // שאלה 01: פתיח ראשי + שאלה q01
-    if (!q01) {
-        return res.send('id_list_message=f-quiz_intro&read=f-q01=q01,no,1,1,7,Number,no,no,1.2.3');
-    }
-
-    // שאלות 02 עד 14
+    if (!q01) return res.send('id_list_message=f-quiz_intro&read=f-q01=q01,no,1,1,7,Number,no,no,1.2.3');
     if (!q02) return res.send('read=f-q02=q02,no,1,1,7,Number,no,no,1.2.3');
     if (!q03) return res.send('read=f-q03=q03,no,1,1,7,Number,no,no,1.2.3');
     if (!q04) return res.send('read=f-q04=q04,no,1,1,7,Number,no,no,1.2.3');
@@ -64,17 +55,12 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
     if (!q13) return res.send('read=f-q13=q13,no,1,1,7,Number,no,no,1.2.3');
     if (!q14) return res.send('read=f-q14=q14,no,1,1,7,Number,no,no,1.2.3');
 
-    // שאלה 15: מעברון חלק ג' + שאלה q15
-    if (!q15) {
-        return res.send('id_list_message=f-mid_intro3&read=f-q15=q15,no,1,1,7,Number,no,no,1.2.3');
-    }
-
-    // שאלות 16 ו-17
+    if (!q15) return res.send('id_list_message=f-mid_intro3&read=f-q15=q15,no,1,1,7,Number,no,no,1.2.3');
     if (!q16) return res.send('read=f-q16=q16,no,1,1,7,Number,no,no,1.2.3');
     if (!q17) return res.send('read=f-q17=q17,no,1,1,7,Number,no,no,1.2.3');
 
     // -------------------------------------------------------------
-    // 3. שלב סיום: חישוב תוצאות מדויק לפי התשובות שנאספו
+    // חישוב תוצאות
     // -------------------------------------------------------------
     const scores = {
         m_accounting: 0,
