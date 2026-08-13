@@ -5,7 +5,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.all(['/survey', '/ivr', '/'], (req, res) => {
-    // הגדרת Content-Type כטקסט נקי עבור ימות המשיח
+    // הגדרת Content-Type כטקסט נקי
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
 
     // איחוד הפרמטרים הנכנסים מימות המשיח (GET / POST)
@@ -38,37 +38,37 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
     const q17 = getParam('q17');
 
     // -------------------------------------------------------------
-    // 2. בדיקת שאלות ברצף (המבנה המקורי והיציב למניעת ניתוקים)
+    // 2. בדיקת שאלות ברצף (כולל פתיח והקראת אישור תקינה)
     // -------------------------------------------------------------
 
     // שאלה 01: פתיח ראשי + שאלה q01
     if (!q01) {
-        return res.send('id_list_message=f-quiz_intro&read=q01=q01,yes,1,1,7,Number,yes,no,1.2.3');
+        return res.send('id_list_message=f-quiz_intro&read=q01=f-q01,yes,1,1,7,Number,yes,no,1.2.3');
     }
 
     // שאלות 02 עד 14
-    if (!q02) return res.send('read=q02=q02,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q03) return res.send('read=q03=q03,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q04) return res.send('read=q04=q04,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q05) return res.send('read=q05=q05,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q06) return res.send('read=q06=q06,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q07) return res.send('read=q07=q07,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q08) return res.send('read=q08=q08,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q09) return res.send('read=q09=q09,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q10) return res.send('read=q10=q10,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q11) return res.send('read=q11=q11,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q12) return res.send('read=q12=q12,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q13) return res.send('read=q13=q13,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q14) return res.send('read=q14=q14,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q02) return res.send('read=q02=f-q02,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q03) return res.send('read=q03=f-q03,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q04) return res.send('read=q04=f-q04,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q05) return res.send('read=q05=f-q05,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q06) return res.send('read=q06=f-q06,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q07) return res.send('read=q07=f-q07,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q08) return res.send('read=q08=f-q08,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q09) return res.send('read=q09=f-q09,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q10) return res.send('read=q10=f-q10,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q11) return res.send('read=q11=f-q11,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q12) return res.send('read=q12=f-q12,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q13) return res.send('read=q13=f-q13,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q14) return res.send('read=q14=f-q14,yes,1,1,7,Number,yes,no,1.2.3');
 
     // שאלה 15: מעברון חלק ג' + שאלה q15
     if (!q15) {
-        return res.send('id_list_message=f-mid_intro3&read=q15=q15,yes,1,1,7,Number,yes,no,1.2.3');
+        return res.send('id_list_message=f-mid_intro3&read=q15=f-q15,yes,1,1,7,Number,yes,no,1.2.3');
     }
 
     // שאלות 16 ו-17
-    if (!q16) return res.send('read=q16=q16,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!q17) return res.send('read=q17=q17,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q16) return res.send('read=q16=f-q16,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q17) return res.send('read=q17=f-q17,yes,1,1,7,Number,yes,no,1.2.3');
 
     // -------------------------------------------------------------
     // 3. שלב סיום: חישוב תוצאות ומשוב
