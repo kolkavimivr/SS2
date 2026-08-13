@@ -16,47 +16,66 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         return res.send('OK');
     }
 
+    // פונקציה לחילוץ בטוח של התשובות (בודקת גם f-q01 וגם q01)
+    const getAns = (key) => {
+        const val = params[`f-${key}`] || params[key];
+        return val ? String(val).trim() : null;
+    };
+
+    const q01 = getAns('q01');
+    const q02 = getAns('q02');
+    const q03 = getAns('q03');
+    const q04 = getAns('q04');
+    const q05 = getAns('q05');
+    const q06 = getAns('q06');
+    const q07 = getAns('q07');
+    const q08 = getAns('q08');
+    const q09 = getAns('q09');
+    const q10 = getAns('q10');
+    const q11 = getAns('q11');
+    const q12 = getAns('q12');
+    const q13 = getAns('q13');
+    const q14 = getAns('q14');
+    const q15 = getAns('q15');
+    const q16 = getAns('q16');
+    const q17 = getAns('q17');
+
     // -------------------------------------------------------------
-    // 2. בדיקת שאלות ברצף (הקראת "אחד" + בקשת אישור)
+    // 2. מעבר שאלות רציף ללא בקשת אישור (מעבר מיידי בלחיצה)
     // -------------------------------------------------------------
 
     // שאלה 01: פתיח ראשי + שאלה q01
-    if (!params.q01) {
-        return res.send('id_list_message=f-quiz_intro&read=f-q01=q01,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q01) {
+        return res.send('id_list_message=f-quiz_intro&read=f-q01=q01,no,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלות 02 עד 14
-    if (!params.q02) return res.send('read=f-q02=q02,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q03) return res.send('read=f-q03=q03,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q04) return res.send('read=f-q04=q04,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q05) return res.send('read=f-q05=q05,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q06) return res.send('read=f-q06=q06,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q07) return res.send('read=f-q07=q07,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q08) return res.send('read=f-q08=q08,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q09) return res.send('read=f-q09=q09,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q10) return res.send('read=f-q10=q10,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q11) return res.send('read=f-q11=q11,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q12) return res.send('read=f-q12=q12,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q13) return res.send('read=f-q13=q13,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q14) return res.send('read=f-q14=q14,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q02) return res.send('read=f-q02=q02,no,1,1,7,Number,no,no,1.2.3');
+    if (!q03) return res.send('read=f-q03=q03,no,1,1,7,Number,no,no,1.2.3');
+    if (!q04) return res.send('read=f-q04=q04,no,1,1,7,Number,no,no,1.2.3');
+    if (!q05) return res.send('read=f-q05=q05,no,1,1,7,Number,no,no,1.2.3');
+    if (!q06) return res.send('read=f-q06=q06,no,1,1,7,Number,no,no,1.2.3');
+    if (!q07) return res.send('read=f-q07=q07,no,1,1,7,Number,no,no,1.2.3');
+    if (!q08) return res.send('read=f-q08=q08,no,1,1,7,Number,no,no,1.2.3');
+    if (!q09) return res.send('read=f-q09=q09,no,1,1,7,Number,no,no,1.2.3');
+    if (!q10) return res.send('read=f-q10=q10,no,1,1,7,Number,no,no,1.2.3');
+    if (!q11) return res.send('read=f-q11=q11,no,1,1,7,Number,no,no,1.2.3');
+    if (!q12) return res.send('read=f-q12=q12,no,1,1,7,Number,no,no,1.2.3');
+    if (!q13) return res.send('read=f-q13=q13,no,1,1,7,Number,no,no,1.2.3');
+    if (!q14) return res.send('read=f-q14=q14,no,1,1,7,Number,no,no,1.2.3');
 
     // שאלה 15: מעברון חלק ג' + שאלה q15
-    if (!params.q15) {
-        return res.send('id_list_message=f-mid_intro3&read=f-q15=q15,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q15) {
+        return res.send('id_list_message=f-mid_intro3&read=f-q15=q15,no,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלות 16 ו-17
-    if (!params.q16) return res.send('read=f-q16=q16,yes,1,1,7,Number,yes,no,1.2.3');
-    if (!params.q17) return res.send('read=f-q17=q17,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!q16) return res.send('read=f-q16=q16,no,1,1,7,Number,no,no,1.2.3');
+    if (!q17) return res.send('read=f-q17=q17,no,1,1,7,Number,no,no,1.2.3');
 
     // -------------------------------------------------------------
-    // 3. שלב סיום: חישוב תוצאות ומשוב
+    // 3. שלב סיום: חישוב תוצאות מדויק
     // -------------------------------------------------------------
-    const { 
-        q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11, 
-        q12, q13, q14, q15, q16, q17 
-    } = params;
-
     const scores = {
         m_accounting: 0,
         m_graphics: 0,
@@ -67,20 +86,18 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         m_hr: 0
     };
 
-    const parseAns = (val) => String(val || '').trim();
-
     const pairwiseQuestions = [
-        { ans: parseAns(q01), a: 'm_accounting', b: 'm_graphics' },
-        { ans: parseAns(q02), a: 'm_tech',       b: 'm_education' },
-        { ans: parseAns(q03), a: 'm_sewing',     b: 'm_marketing' },
-        { ans: parseAns(q04), a: 'm_hr',         b: 'm_accounting' },
-        { ans: parseAns(q05), a: 'm_graphics',   b: 'm_tech' },
-        { ans: parseAns(q06), a: 'm_education',  b: 'm_hr' },
-        { ans: parseAns(q07), a: 'm_marketing',  b: 'm_sewing' },
-        { ans: parseAns(q08), a: 'm_accounting', b: 'm_tech' },
-        { ans: parseAns(q09), a: 'm_graphics',   b: 'm_hr' },
-        { ans: parseAns(q10), a: 'm_education',  b: 'm_marketing' },
-        { ans: parseAns(q11), a: 'm_sewing',     b: 'm_accounting' }
+        { ans: q01, a: 'm_accounting', b: 'm_graphics' },
+        { ans: q02, a: 'm_tech',       b: 'm_education' },
+        { ans: q03, a: 'm_sewing',     b: 'm_marketing' },
+        { ans: q04, a: 'm_hr',         b: 'm_accounting' },
+        { ans: q05, a: 'm_graphics',   b: 'm_tech' },
+        { ans: q06, a: 'm_education',  b: 'm_hr' },
+        { ans: q07, a: 'm_marketing',  b: 'm_sewing' },
+        { ans: q08, a: 'm_accounting', b: 'm_tech' },
+        { ans: q09, a: 'm_graphics',   b: 'm_hr' },
+        { ans: q10, a: 'm_education',  b: 'm_marketing' },
+        { ans: q11, a: 'm_sewing',     b: 'm_accounting' }
     ];
 
     pairwiseQuestions.forEach(q => {
@@ -101,13 +118,9 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         sortedMajors[2]
     ];
 
-    const q15Ans = parseAns(q15);
-    const q16Ans = parseAns(q16);
-    const q17Ans = parseAns(q17);
-
-    if (q15Ans === '1' || q17Ans === '1') playList.push('warning_social');
-    if (q16Ans === '1') playList.push('info_minimal_load');
-    if (q15Ans === '2' && q17Ans === '2') playList.push('info_independent');
+    if (q15 === '1' || q17 === '1') playList.push('warning_social');
+    if (q16 === '1') playList.push('info_minimal_load');
+    if (q15 === '2' && q17 === '2') playList.push('info_independent');
 
     const idListMessage = playList.map(file => `f-${file}`).join('.');
     return res.send(`id_list_message=${idListMessage}&go_to_folder=/0/4/2`);
