@@ -17,37 +17,37 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
     }
 
     // -------------------------------------------------------------
-    // 2. בדיקת שאלות ברצף (שימוש ב-Digits להקראה תקינה של הספרה 1)
+    // 2. בדיקת שאלות ברצף (הקראת "אחד" + בקשת אישור)
     // -------------------------------------------------------------
 
     // שאלה 01: פתיח ראשי + שאלה q01
     if (!params.q01) {
-        return res.send('id_list_message=f-quiz_intro&read=f-q01=q01,yes,1,1,7,Digits,yes,no,1.2.3');
+        return res.send('id_list_message=f-quiz_intro&read=f-q01=q01,yes,1,1,7,Number,yes,no,1.2.3');
     }
 
     // שאלות 02 עד 14
-    if (!params.q02) return res.send('read=f-q02=q02,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q03) return res.send('read=f-q03=q03,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q04) return res.send('read=f-q04=q04,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q05) return res.send('read=f-q05=q05,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q06) return res.send('read=f-q06=q06,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q07) return res.send('read=f-q07=q07,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q08) return res.send('read=f-q08=q08,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q09) return res.send('read=f-q09=q09,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q10) return res.send('read=f-q10=q10,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q11) return res.send('read=f-q11=q11,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q12) return res.send('read=f-q12=q12,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q13) return res.send('read=f-q13=q13,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q14) return res.send('read=f-q14=q14,yes,1,1,7,Digits,yes,no,1.2.3');
+    if (!params.q02) return res.send('read=f-q02=q02,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q03) return res.send('read=f-q03=q03,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q04) return res.send('read=f-q04=q04,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q05) return res.send('read=f-q05=q05,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q06) return res.send('read=f-q06=q06,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q07) return res.send('read=f-q07=q07,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q08) return res.send('read=f-q08=q08,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q09) return res.send('read=f-q09=q09,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q10) return res.send('read=f-q10=q10,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q11) return res.send('read=f-q11=q11,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q12) return res.send('read=f-q12=q12,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q13) return res.send('read=f-q13=q13,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q14) return res.send('read=f-q14=q14,yes,1,1,7,Number,yes,no,1.2.3');
 
     // שאלה 15: מעברון חלק ג' + שאלה q15
     if (!params.q15) {
-        return res.send('id_list_message=f-mid_intro3&read=f-q15=q15,yes,1,1,7,Digits,yes,no,1.2.3');
+        return res.send('id_list_message=f-mid_intro3&read=f-q15=q15,yes,1,1,7,Number,yes,no,1.2.3');
     }
 
     // שאלות 16 ו-17
-    if (!params.q16) return res.send('read=f-q16=q16,yes,1,1,7,Digits,yes,no,1.2.3');
-    if (!params.q17) return res.send('read=f-q17=q17,yes,1,1,7,Digits,yes,no,1.2.3');
+    if (!params.q16) return res.send('read=f-q16=q16,yes,1,1,7,Number,yes,no,1.2.3');
+    if (!params.q17) return res.send('read=f-q17=q17,yes,1,1,7,Number,yes,no,1.2.3');
 
     // -------------------------------------------------------------
     // 3. שלב סיום: חישוב תוצאות ומשוב
@@ -67,7 +67,6 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         m_hr: 0
     };
 
-    // פונקציה לבדיקת תשובה בטוחה
     const parseAns = (val) => String(val || '').trim();
 
     const pairwiseQuestions = [
