@@ -16,7 +16,7 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         return res.send('OK');
     }
 
-    // פונקציה לחילוץ בטוח של התשובות (בודקת גם f-q01 וגם q01)
+    // פונקציה לחילוץ בטוח של התשובות (תומכת ב-f-q01 וגם ב-q01)
     const getAns = (key) => {
         const val = params[`f-${key}`] || params[key];
         return val ? String(val).trim() : null;
