@@ -5,17 +5,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.all(['/survey', '/ivr', '/'], (req, res) => {
+    // הגדרת Content-Type כטקסט נקי עבור ימות המשיח
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
 
+    // איחוד הפרמטרים הנכנסים מימות המשיח (GET / POST)
     const params = { ...req.query, ...req.body };
 
+    // 1. טיפול בניתוק שיחה
     if (params.hangup === 'yes') {
         return res.send('OK');
     }
 
-    // חילוץ תשובות בטוח (מטפל גם ב-f-q01 וגם ב-q01)
+    // פונקציה לחילוץ בטוח של התשובות (תומכת ב-q01 וגם ב-f-q01)
     const getAns = (key) => {
-        const val = params[`f-${key}`] || params[key];
+        const val = params[key] || params[`f-${key}`];
         return val ? String(val).trim() : null;
     };
 
@@ -38,29 +41,40 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
     const q17 = getAns('q17');
 
     // -------------------------------------------------------------
-    // מעבר שאלות רציף ומיידי (ללא שאלת אישור)
+    // 2. מעבר שאלות רציף - קובץ השמעה f-qXX, משתנה נקלט qXX
     // -------------------------------------------------------------
-    if (!q01) return res.send('id_list_message=f-quiz_intro&read=f-q01=q01,no,1,1,7,Number,no,no,1.2.3');
-    if (!q02) return res.send('read=f-q02=q02,no,1,1,7,Number,no,no,1.2.3');
-    if (!q03) return res.send('read=f-q03=q03,no,1,1,7,Number,no,no,1.2.3');
-    if (!q04) return res.send('read=f-q04=q04,no,1,1,7,Number,no,no,1.2.3');
-    if (!q05) return res.send('read=f-q05=q05,no,1,1,7,Number,no,no,1.2.3');
-    if (!q06) return res.send('read=f-q06=q06,no,1,1,7,Number,no,no,1.2.3');
-    if (!q07) return res.send('read=f-q07=q07,no,1,1,7,Number,no,no,1.2.3');
-    if (!q08) return res.send('read=f-q08=q08,no,1,1,7,Number,no,no,1.2.3');
-    if (!q09) return res.send('read=f-q09=q09,no,1,1,7,Number,no,no,1.2.3');
-    if (!q10) return res.send('read=f-q10=q10,no,1,1,7,Number,no,no,1.2.3');
-    if (!q11) return res.send('read=f-q11=q11,no,1,1,7,Number,no,no,1.2.3');
-    if (!q12) return res.send('read=f-q12=q12,no,1,1,7,Number,no,no,1.2.3');
-    if (!q13) return res.send('read=f-q13=q13,no,1,1,7,Number,no,no,1.2.3');
-    if (!q14) return res.send('read=f-q14=q14,no,1,1,7,Number,no,no,1.2.3');
 
-    if (!q15) return res.send('id_list_message=f-mid_intro3&read=f-q15=q15,no,1,1,7,Number,no,no,1.2.3');
-    if (!q16) return res.send('read=f-q16=q16,no,1,1,7,Number,no,no,1.2.3');
-    if (!q17) return res.send('read=f-q17=q17,no,1,1,7,Number,no,no,1.2.3');
+    // שאלה 01: פתיח ראשי + שאלה q01
+    if (!q01) {
+        return res.send('id_list_message=f-quiz_intro&read=q01=f-q01,no,1,1,7,Number,no,no,1.2.3');
+    }
+
+    // שאלות 02 עד 14
+    if (!q02) return res.send('read=q02=f-q02,no,1,1,7,Number,no,no,1.2.3');
+    if (!q03) return res.send('read=q03=f-q03,no,1,1,7,Number,no,no,1.2.3');
+    if (!q04) return res.send('read=q04=f-q04,no,1,1,7,Number,no,no,1.2.3');
+    if (!q05) return res.send('read=q05=f-q05,no,1,1,7,Number,no,no,1.2.3');
+    if (!q06) return res.send('read=q06=f-q06,no,1,1,7,Number,no,no,1.2.3');
+    if (!q07) return res.send('read=q07=f-q07,no,1,1,7,Number,no,no,1.2.3');
+    if (!q08) return res.send('read=q08=f-q08,no,1,1,7,Number,no,no,1.2.3');
+    if (!q09) return res.send('read=q09=f-q09,no,1,1,7,Number,no,no,1.2.3');
+    if (!q10) return res.send('read=q10=f-q10,no,1,1,7,Number,no,no,1.2.3');
+    if (!q11) return res.send('read=q11=f-q11,no,1,1,7,Number,no,no,1.2.3');
+    if (!q12) return res.send('read=q12=f-q12,no,1,1,7,Number,no,no,1.2.3');
+    if (!q13) return res.send('read=q13=f-q13,no,1,1,7,Number,no,no,1.2.3');
+    if (!q14) return res.send('read=q14=f-q14,no,1,1,7,Number,no,no,1.2.3');
+
+    // שאלה 15: מעברון חלק ג' + שאלה q15
+    if (!q15) {
+        return res.send('id_list_message=f-mid_intro3&read=q15=f-q15,no,1,1,7,Number,no,no,1.2.3');
+    }
+
+    // שאלות 16 ו-17
+    if (!q16) return res.send('read=q16=f-q16,no,1,1,7,Number,no,no,1.2.3');
+    if (!q17) return res.send('read=q17=f-q17,no,1,1,7,Number,no,no,1.2.3');
 
     // -------------------------------------------------------------
-    // חישוב תוצאות
+    // 3. שלב סיום: חישוב תוצאות ומשוב מדויק
     // -------------------------------------------------------------
     const scores = {
         m_accounting: 0,
