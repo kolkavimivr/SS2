@@ -5,10 +5,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.all(['/survey', '/ivr', '/'], (req, res) => {
-    // הגדרת Content-Type כטקסט נקי עבור ימות המשיח
+    // הגדרת Content-Type כטקסט נקי
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
 
-    // איחוד הפרמטרים הנכנסים מימות המשיח (GET / POST)
+    // איחוד הפרמטרים הנכנסים (GET / POST)
     const params = { ...req.query, ...req.body };
 
     // 1. טיפול בניתוק שיחה
@@ -16,66 +16,47 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         return res.send('OK');
     }
 
-    // פונקציה לחילוץ בטוח של התשובות (תומכת ב-q01 וגם ב-f-q01)
-    const getAns = (key) => {
-        const val = params[key] || params[`f-${key}`];
-        return val ? String(val).trim() : null;
-    };
-
-    const q01 = getAns('q01');
-    const q02 = getAns('q02');
-    const q03 = getAns('q03');
-    const q04 = getAns('q04');
-    const q05 = getAns('q05');
-    const q06 = getAns('q06');
-    const q07 = getAns('q07');
-    const q08 = getAns('q08');
-    const q09 = getAns('q09');
-    const q10 = getAns('q10');
-    const q11 = getAns('q11');
-    const q12 = getAns('q12');
-    const q13 = getAns('q13');
-    const q14 = getAns('q14');
-    const q15 = getAns('q15');
-    const q16 = getAns('q16');
-    const q17 = getAns('q17');
-
     // -------------------------------------------------------------
-    // 2. מעבר שאלות רציף (פתיחים משורשרים ישירות בתוך ה-read)
+    // 2. בדיקת שאלות ברצף
     // -------------------------------------------------------------
 
-    // שאלה 01: פתיח ראשי + שאלה q01 משורשרים יחד ברצף
-    if (!q01) {
-        return res.send('read=q01=f-quiz_intro.f-q01,no,1,1,7,Number,no,no,1.2.3');
+    // שאלה 01: פתיח ראשי + שאלה q01 בשרשור קבצים
+    if (!params.q01) {
+        return res.send('read=f-quiz_intro.f-q01=q01,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלות 02 עד 14
-    if (!q02) return res.send('read=q02=f-q02,no,1,1,7,Number,no,no,1.2.3');
-    if (!q03) return res.send('read=q03=f-q03,no,1,1,7,Number,no,no,1.2.3');
-    if (!q04) return res.send('read=q04=f-q04,no,1,1,7,Number,no,no,1.2.3');
-    if (!q05) return res.send('read=q05=f-q05,no,1,1,7,Number,no,no,1.2.3');
-    if (!q06) return res.send('read=q06=f-q06,no,1,1,7,Number,no,no,1.2.3');
-    if (!q07) return res.send('read=q07=f-q07,no,1,1,7,Number,no,no,1.2.3');
-    if (!q08) return res.send('read=q08=f-q08,no,1,1,7,Number,no,no,1.2.3');
-    if (!q09) return res.send('read=q09=f-q09,no,1,1,7,Number,no,no,1.2.3');
-    if (!q10) return res.send('read=q10=f-q10,no,1,1,7,Number,no,no,1.2.3');
-    if (!q11) return res.send('read=q11=f-q11,no,1,1,7,Number,no,no,1.2.3');
-    if (!q12) return res.send('read=q12=f-q12,no,1,1,7,Number,no,no,1.2.3');
-    if (!q13) return res.send('read=q13=f-q13,no,1,1,7,Number,no,no,1.2.3');
-    if (!q14) return res.send('read=q14=f-q14,no,1,1,7,Number,no,no,1.2.3');
+    if (!params.q02) return res.send('read=f-q02=q02,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q03) return res.send('read=f-q03=q03,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q04) return res.send('read=f-q04=q04,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q05) return res.send('read=f-q05=q05,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q06) return res.send('read=f-q06=q06,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q07) return res.send('read=f-q07=q07,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q08) return res.send('read=f-q08=q08,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q09) return res.send('read=f-q09=q09,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q10) return res.send('read=f-q10=q10,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q11) return res.send('read=f-q11=q11,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q12) return res.send('read=f-q12=q12,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q13) return res.send('read=f-q13=q13,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q14) return res.send('read=f-q14=q14,yes,1,1,7,Number,no,no,1.2.3');
 
-    // שאלה 15: מעברון חלק ג' + שאלה q15 משורשרים יחד ברצף
-    if (!q15) {
-        return res.send('read=q15=f-mid_intro3.f-q15,no,1,1,7,Number,no,no,1.2.3');
+    // שאלה 15: מעברון חלק ג' + שאלה q15 בשרשור קבצים
+    if (!params.q15) {
+        return res.send('read=f-mid_intro3.f-q15=q15,yes,1,1,7,Number,no,no,1.2.3');
     }
 
     // שאלות 16 ו-17
-    if (!q16) return res.send('read=q16=f-q16,no,1,1,7,Number,no,no,1.2.3');
-    if (!q17) return res.send('read=q17=f-q17,no,1,1,7,Number,no,no,1.2.3');
+    if (!params.q16) return res.send('read=f-q16=q16,yes,1,1,7,Number,no,no,1.2.3');
+    if (!params.q17) return res.send('read=f-q17=q17,yes,1,1,7,Number,no,no,1.2.3');
 
     // -------------------------------------------------------------
-    // 3. שלב סיום: חישוב תוצאות והשמעתן
+    // 3. שלב סיום: חישוב תוצאות ומשוב
     // -------------------------------------------------------------
+    const { 
+        q01, q02, q03, q04, q05, q06, q07, q08, q09, q10, q11, 
+        q12, q13, q14, q15, q16, q17 
+    } = params;
+
     const scores = {
         m_accounting: 0,
         m_graphics: 0,
@@ -86,6 +67,7 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         m_hr: 0
     };
 
+    // 14 שאלות השוואה מאוזנות לחלוטין (כל מגמה מופיעה בדיוק 4 פעמים)
     const pairwiseQuestions = [
         { ans: q01, a: 'm_accounting', b: 'm_graphics' },
         { ans: q02, a: 'm_tech',       b: 'm_education' },
@@ -93,11 +75,14 @@ app.all(['/survey', '/ivr', '/'], (req, res) => {
         { ans: q04, a: 'm_hr',         b: 'm_accounting' },
         { ans: q05, a: 'm_graphics',   b: 'm_tech' },
         { ans: q06, a: 'm_education',  b: 'm_hr' },
-        { ans: q07, a: 'm_marketing',  b: 'm_sewing' },
+        { ans: q07, a: 'm_graphics',   b: 'm_sewing' },
         { ans: q08, a: 'm_accounting', b: 'm_tech' },
         { ans: q09, a: 'm_graphics',   b: 'm_hr' },
         { ans: q10, a: 'm_education',  b: 'm_marketing' },
-        { ans: q11, a: 'm_sewing',     b: 'm_accounting' }
+        { ans: q11, a: 'm_sewing',     b: 'm_accounting' },
+        { ans: q12, a: 'm_tech',       b: 'm_marketing' },
+        { ans: q13, a: 'm_education',  b: 'm_sewing' },
+        { ans: q14, a: 'm_marketing',  b: 'm_hr' }
     ];
 
     pairwiseQuestions.forEach(q => {
