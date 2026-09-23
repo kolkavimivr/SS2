@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: ai-phone-line
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: GEMINI_API_KEYS
+        sync: false
+      - key: YEMOT_API_USERNAME
+        sync: false
+      - key: YEMOT_API_PASSWORD
+        sync: false
+      - key: YEMOT_API_KEY
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: GEMINI_MODELS
+        sync: false
+      - key: AI_SYSTEM_INSTRUCTION
+        sync: false
+      - key: FIRST_CALL_MESSAGE
+        sync: false
+      - key: YEMOT_AUDIO_MIME_TYPE
+        sync: false
+      - key: REQUEST_TIMEOUT_MS
+        sync: false
+      - key: YEMOT_AI_EXTENSION
+        sync: false
+      - key: AUTO_CONFIGURE_YEMOT
+        sync: false
