@@ -158,19 +158,17 @@ app.get('/health',(req,res)=>res.json({ok:true,geminiConfigured:apiKeys.length>0
 app.get('/',(req,res)=>res.type('html').send(dashboardHtml()));
 
 function getYemotToken(){
-  const username=(process.env.YEMOT_API_USERNAME||'').trim();
-  const password=process.env.YEMOT_API_PASSWORD||'';
   const apiKey=(process.env.YEMOT_API_KEY||'').trim();
-  if(username && password) return username+':'+password;
-  if(apiKey) return apiKey;
-  throw Object.assign(new Error('Yemot credentials are not configured'),{status:400});
+  if(!apiKey) throw Object.assign(new Error('YEMOT_API_KEY is not configured'),{status:400});
+  return apiKey;
 }
 async function yemotApiRequest(command,params={}){
   const token=getYemotToken();
   const qs=new URLSearchParams({token,...params});
   const response=await withTimeout(fetch(`https://www.call2all.co.il/ym/api/${command}?${qs}`),REQUEST_TIMEOUT_MS,`Yemot API ${command}`);
-  const text=await response.text();let data;try{data=JSON.parse(text);}catch{data={raw:text};}
-  if(!response.ok)throw new Error(`Yemot ${command} HTTP ${response.status}`);
+  const text=await response.text();
+  let data; try{data=JSON.parse(text);}catch{data={raw:text};}
+  if(!response.ok) throw new Error(`Yemot ${command} HTTP ${response.status}`);
   if(data?.responseStatus&&data.responseStatus!=='OK'){
     const detail=[data.message,data.messageCode,data.exceptionClass,data.exceptionMessage].filter(Boolean).join(' | ')||JSON.stringify(data);
     throw new Error(`Yemot ${command} failed: ${detail}`);
