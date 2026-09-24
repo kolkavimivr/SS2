@@ -163,7 +163,10 @@ async function yemotApiRequest(command,params={}){
   const response=await withTimeout(fetch(`https://www.call2all.co.il/ym/api/${command}?${qs}`),REQUEST_TIMEOUT_MS,`Yemot API ${command}`);
   const text=await response.text();let data;try{data=JSON.parse(text);}catch{data={raw:text};}
   if(!response.ok)throw new Error(`Yemot ${command} HTTP ${response.status}`);
-  if(data?.responseStatus&&data.responseStatus!=='OK')throw new Error(`Yemot ${command} failed (${data.messageCode??'unknown'})`);
+  if(data?.responseStatus&&data.responseStatus!=='OK'){
+    const detail=[data.message,data.messageCode,data.exceptionClass,data.exceptionMessage].filter(Boolean).join(' | ')||JSON.stringify(data);
+    throw new Error(`Yemot ${command} failed: ${detail}`);
+  }
   return data;
 }
 async function getYemotExtension(path){return yemotApiRequest('GetIVR2Dir',{path});}
@@ -174,7 +177,8 @@ async function configureYemotStructure(){
   if(!process.env.YEMOT_API_KEY?.trim()){console.log('YEMOT_API_KEY missing; skipping automatic IVR setup');return;}
   const extensionPath=`ivr2:/${YEMOT_AI_EXTENSION}`;
   try{
-    await yemotApiRequest('UpdateExtension',{path:extensionPath,type:'api',api_link:publicUrl+'/yemot',api_call_id_send:'yes',api_phone_send:'yes',api_did_send:'yes',api_extension_send:'yes',api_time_send:'yes'});
+    // Yemot sends the standard call parameters by default; only the API branch settings are needed.
+    await yemotApiRequest('UpdateExtension',{path:extensionPath,type:'api',api_link:publicUrl+'/yemot'});
     const verify=await getYemotExtension(extensionPath);
     console.log('Yemot AI extension configured and verified:',extensionPath,verify?.responseStatus||'OK');
   }catch(e){logDetailedError('Yemot automatic setup',e);}
