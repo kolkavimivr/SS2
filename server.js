@@ -174,7 +174,6 @@ async function configureYemotStructure(){
   if(!AUTO_CONFIGURE_YEMOT){console.log('Yemot automatic setup disabled');return;}
   const publicUrl=(process.env.PUBLIC_BASE_URL||'').replace(/\/$/,'');
   if(!publicUrl){console.log('PUBLIC_BASE_URL missing; skipping automatic IVR setup');return;}
-  if(!process.env.YEMOT_API_KEY?.trim()){console.log('YEMOT_API_KEY missing; skipping automatic IVR setup');return;}
   const extensionPath=`ivr2:/${YEMOT_AI_EXTENSION}`;
   try{
     // Yemot sends the standard call parameters by default; only the API branch settings are needed.
