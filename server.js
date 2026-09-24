@@ -152,6 +152,7 @@ async function callHandler(call){
   }
 }
 router.get('/yemot',callHandler);
+app.use(router);
 app.get('/api/conversations',(req,res)=>res.json({conversations:conversationLog,activeCalls:Array.from(activeCalls.values()),totalMessages:conversationLog.length,totalCallers:new Set(conversationLog.map(x=>x.phone)).size,serverTime:new Date().toISOString()}));
 app.get('/health',(req,res)=>res.json({ok:true,geminiConfigured:apiKeys.length>0,supabaseEnabled:SUPABASE_ENABLED,yemotConfigured:!!process.env.YEMOT_API_KEY,serverTime:new Date().toISOString()}));
 app.get('/',(req,res)=>res.type('html').send(dashboardHtml()));
