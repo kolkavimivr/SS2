@@ -132,7 +132,7 @@ async function callHandler(call){
     if(!recordPath||recordPath==='None')return call.id_list_message([{type:'text',data:'לא נקלט דבר להתראות'}]);
     const active=activeCalls.get(activeKey);if(active)active.status='הקלטה התקבלה — מעבד';
     let audioBuffer;
-    try{const response=await withTimeout(yemotApi.download_file('ivr2:'+recordPath),REQUEST_TIMEOUT_MS,'yemotApi.download_file');audioBuffer=response.data;}
+    try{console.log('[recording] path returned by Yemot:',String(recordPath)); audioBuffer=await downloadYemotRecording(recordPath);}
     catch(e){logDetailedError('recording download',e);continue;}
     const audioBase64=Buffer.isBuffer(audioBuffer)?audioBuffer.toString('base64'):Buffer.from(audioBuffer).toString('base64');
     let replyText,transcript='';
@@ -174,6 +174,28 @@ async function yemotApiRequest(command,params={}){
     throw new Error(`Yemot ${command} failed: ${detail}`);
   }
   return data;
+}
+async function downloadYemotRecording(recordPath){
+  const raw=String(recordPath||'').trim();
+  const candidates=[];
+  if(raw.startsWith('ivr2:')) candidates.push(raw);
+  else if(raw.startsWith('/')) candidates.push('ivr2:'+raw);
+  else candidates.push('ivr2:/'+raw);
+  if(!raw.startsWith('ivr2:')) candidates.push(raw.startsWith('/')?raw:'/'+raw);
+  let lastError='unknown';
+  for(const path of [...new Set(candidates)]){
+    const qs=new URLSearchParams({token:getYemotToken(),path});
+    const response=await withTimeout(fetch(`https://www.call2all.co.il/ym/api/DownloadFile?${qs}`),REQUEST_TIMEOUT_MS,`Yemot DownloadFile ${path}`);
+    const buffer=Buffer.from(await response.arrayBuffer());
+    if(response.ok && buffer.length>0){
+      const preview=buffer.toString('utf8',0,80);
+      if(!/^Requested file does not exist|^Error/i.test(preview)) return buffer;
+      lastError=preview;
+    }else{
+      lastError=buffer.toString('utf8',0,200)||`HTTP ${response.status}`;
+    }
+  }
+  throw new Error(`Yemot recording download failed for ${raw}: ${lastError}`);
 }
 async function getYemotExtension(path){return yemotApiRequest('GetIVR2Dir',{path});}
 async function configureYemotStructure(){
