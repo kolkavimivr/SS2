@@ -176,26 +176,27 @@ async function yemotApiRequest(command,params={}){
   return data;
 }
 async function downloadYemotRecording(recordPath){
-  const raw=String(recordPath||'').trim();
+  const raw=String(recordPath||'').trim().replace(/^ivr2:/,'').replace(/^\/+/,'');
+  const base=raw.replace(/\.(wav|ogg|mp3)$/i,'');
+  const fileVariants=[raw,base+'.wav',base+'.ogg',base+'.mp3'];
   const candidates=[];
-  if(raw.startsWith('ivr2:')) candidates.push(raw);
-  else if(raw.startsWith('/')) candidates.push('ivr2:'+raw);
-  else candidates.push('ivr2:/'+raw);
-  if(!raw.startsWith('ivr2:')) candidates.push(raw.startsWith('/')?raw:'/'+raw);
+  for(const file of fileVariants){
+    candidates.push('ivr2:/'+file);
+    candidates.push('ivr2:'+file);
+  }
   let lastError='unknown';
   for(const path of [...new Set(candidates)]){
     const qs=new URLSearchParams({token:getYemotToken(),path});
     const response=await withTimeout(fetch(`https://www.call2all.co.il/ym/api/DownloadFile?${qs}`),REQUEST_TIMEOUT_MS,`Yemot DownloadFile ${path}`);
     const buffer=Buffer.from(await response.arrayBuffer());
-    if(response.ok && buffer.length>0){
-      const preview=buffer.toString('utf8',0,80);
-      if(!/^Requested file does not exist|^Error/i.test(preview)) return buffer;
-      lastError=preview;
-    }else{
-      lastError=buffer.toString('utf8',0,200)||`HTTP ${response.status}`;
+    const preview=buffer.toString('utf8',0,120);
+    console.log('[recording download] tried',path,'status',response.status,'bytes',buffer.length);
+    if(response.ok && buffer.length>100 && !/^Requested file does not exist|^Error/i.test(preview)){
+      return buffer;
     }
+    lastError=preview||`HTTP ${response.status}`;
   }
-  throw new Error(`Yemot recording download failed for ${raw}: ${lastError}`);
+  throw new Error(`Yemot recording download failed for ${recordPath}: ${lastError}`);
 }
 async function getYemotExtension(path){return yemotApiRequest('GetIVR2Dir',{path});}
 async function configureYemotStructure(){
