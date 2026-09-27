@@ -22,17 +22,3 @@ services:
         sync: false
       - key: SUPABASE_KEY
         sync: false
-      - key: GEMINI_MODELS
-        sync: false
-      - key: AI_SYSTEM_INSTRUCTION
-        sync: false
-      - key: FIRST_CALL_MESSAGE
-        sync: false
-      - key: YEMOT_AUDIO_MIME_TYPE
-        sync: false
-      - key: REQUEST_TIMEOUT_MS
-        sync: false
-      - key: YEMOT_AI_EXTENSION
-        sync: false
-      - key: AUTO_CONFIGURE_YEMOT
-        sync: false
