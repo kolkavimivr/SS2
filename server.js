@@ -252,13 +252,13 @@ async function yemotApiRequest(command,params={}) {
   const apiKey=(process.env.YEMOT_API_KEY||'').trim();
   if(!apiKey) throw new Error('YEMOT_API_KEY is not configured');
   const qs=new URLSearchParams({token:apiKey,...params});
-  const r=await withTimeout(fetch(\`https://www.call2all.co.il/ym/api/\${command}?\${qs}\`),
-    REQUEST_TIMEOUT_MS,\`Yemot API \${command}\`);
+  const r=await withTimeout(fetch(`https://www.call2all.co.il/ym/api/${command}?${qs}`),
+    REQUEST_TIMEOUT_MS,`Yemot API ${command}`);
   const text=await r.text();
   let data; try{data=JSON.parse(text)}catch{data={raw:text}};
-  if(!r.ok) throw new Error(\`Yemot \${command} HTTP \${r.status}: \${text}\`);
+  if(!r.ok) throw new Error(`Yemot ${command} HTTP ${r.status}: ${text}`);
   if(data.responseStatus && data.responseStatus!=='OK')
-    throw new Error(\`Yemot \${command} failed: \${text}\`);
+    throw new Error(`Yemot ${command} failed: ${text}`);
   return data;
 }
 async function configureYemotStructure() {
